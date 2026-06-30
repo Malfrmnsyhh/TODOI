@@ -2,12 +2,26 @@
 
 import React from 'react';
 import { LayoutDashboard, CheckSquare, BarChart2, Settings, Plus } from 'lucide-react';
+import { useTaskStore } from '@/store/taskStore';
 
 interface SidebarProps {
   onNewTask: () => void;
 }
 
 export default function Sidebar({ onNewTask }: SidebarProps) {
+  const { user } = useTaskStore();
+  
+  // Get initials from user name (e.g. "John Doe" -> "JD")
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, active: true },
     { name: 'My Tasks', icon: CheckSquare, active: false },
@@ -19,14 +33,14 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
     <aside className="w-64 h-full flex flex-col p-6 border-r border-white/10 bg-[#0b1326] flex-shrink-0 hidden md:flex">
       {/* Brand & Profile */}
       <div className="mb-10">
-        <h2 className="text-xl font-bold text-white mb-6">FocusFlow</h2>
+        <h2 className="text-xl font-bold text-white mb-6">TODOI</h2>
         
         <div className="flex items-center gap-3 p-3 rounded-xl glass-panel-light">
           <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
-            AR
+            {getInitials(user?.name)}
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">Alex Rivers</p>
+            <p className="text-sm font-semibold text-white">{user?.name || 'User'}</p>
             <p className="text-xs text-indigo-400">Productivity Pro</p>
           </div>
         </div>
