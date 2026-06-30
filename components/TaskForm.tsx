@@ -10,8 +10,8 @@ import { X } from 'lucide-react';
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
   description: z.string().max(500).optional(),
-  category: z.string().default('general'),
-  priority: z.enum(['low', 'medium', 'high']).default('medium'),
+  priority: z.enum(['low', 'medium', 'high']),
+  category: z.string().min(1, 'Category is required'),
   dueDate: z.string().optional(),
 });
 
@@ -27,123 +27,126 @@ const TaskForm: React.FC<Props> = ({ task, onSubmit, onClose }) => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
-    defaultValues: {
-      title: task?.title || '',
-      description: task?.description || '',
-      category: task?.category || 'general',
-      priority: task?.priority || 'medium',
-      dueDate: task?.dueDate || '',
-    },
+    defaultValues: task
+      ? {
+          title: task.title,
+          description: task.description || '',
+          priority: task.priority,
+          category: task.category,
+          dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
+        }
+      : {
+          priority: 'medium',
+          category: 'general',
+        },
   });
 
-  const onFormSubmit = (data: TaskFormData) => {
-    onSubmit(data);
-    reset();
-    onClose();
-  };
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">
-            {task ? 'Edit Task' : 'New Task'}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-[#0b1326] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in shadow-2xl">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-white">
+            {task ? 'Edit Task' : 'Create New Task'}
           </h2>
           <button
             onClick={onClose}
-            type="button"
-            className="p-1 hover:bg-gray-100 rounded transition"
+            className="text-gray-400 hover:text-white transition bg-white/5 hover:bg-white/10 p-2 rounded-full"
           >
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Title */}
           <div>
-            <label className="block text-sm font-semibold mb-1">Title *</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Title
+            </label>
             <input
-              type="text"
               {...register('title')}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 text-white placeholder-gray-500 transition-all"
               placeholder="What needs to be done?"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.title && (
-              <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>
+              <p className="text-red-400 text-sm mt-1">{errors.title.message}</p>
             )}
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
-              Description
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Description <span className="text-gray-500 text-xs">(Optional)</span>
             </label>
             <textarea
               {...register('description')}
-              placeholder="Add more details..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 text-white placeholder-gray-500 transition-all resize-none"
+              placeholder="Add details..."
             />
           </div>
 
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-semibold mb-1">Category</label>
-            <select
-              {...register('category')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="general">General</option>
-              <option value="work">Work</option>
-              <option value="personal">Personal</option>
-              <option value="shopping">Shopping</option>
-              <option value="health">Health</option>
-            </select>
-          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {/* Priority */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Priority
+              </label>
+              <select
+                {...register('priority')}
+                className="w-full px-4 py-2 bg-[#1e293b] border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 text-white appearance-none"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
 
-          {/* Priority */}
-          <div>
-            <label className="block text-sm font-semibold mb-1">Priority</label>
-            <select
-              {...register('priority')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Category
+              </label>
+              <select
+                {...register('category')}
+                className="w-full px-4 py-2 bg-[#1e293b] border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 text-white appearance-none"
+              >
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="health">Health</option>
+                <option value="shopping">Shopping</option>
+                <option value="general">General</option>
+              </select>
+            </div>
           </div>
 
           {/* Due Date */}
           <div>
-            <label className="block text-sm font-semibold mb-1">
-              Due Date
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Due Date <span className="text-gray-500 text-xs">(Optional)</span>
             </label>
             <input
               type="date"
               {...register('dueDate')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 text-white transition-all [color-scheme:dark]"
             />
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-2 pt-4">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/10 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-semibold"
+              className="px-4 py-2 text-gray-400 hover:text-white transition font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition font-semibold shadow-lg shadow-indigo-500/30"
             >
-              {task ? 'Update' : 'Create'}
+              {task ? 'Update Task' : 'Create Task'}
             </button>
           </div>
         </form>

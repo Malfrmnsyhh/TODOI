@@ -8,7 +8,9 @@ import TaskForm from '@/components/TaskForm';
 import TaskList from '@/components/TaskList';
 import TaskFilters from '@/components/TaskFilters';
 import StatsCard from '@/components/StatsCard';
-import { Plus, Loader } from 'lucide-react';
+import Sidebar from '@/components/Sidebar';
+import RightPanel from '@/components/RightPanel';
+import { Loader } from 'lucide-react';
 
 export default function Home() {
   const {
@@ -52,15 +54,13 @@ export default function Home() {
     loadTasks();
   }, [setTasks, setLoading]);
 
-  // Tambahkan kode ini di dalam komponen Home, di bawah useEffect loadTasks:
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Ctrl/Cmd + N untuk memunculkan modal New Task
       if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
         e.preventDefault();
         handleOpenForm();
       }
-      // Tombol Escape untuk menutup modal
       if (e.key === 'Escape') {
         handleCloseForm();
       }
@@ -81,7 +81,6 @@ export default function Home() {
         updatedAt: new Date().toISOString(),
       };
 
-      // Coba simpan lewat API (jika error, simpan lokal)
       try {
         const response = await createTask(formData);
         addTask(response);
@@ -119,51 +118,46 @@ export default function Home() {
     }
   };
 
-
   const filteredTasks = getFilteredTasks();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 animate-fade-in">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                My Tasks
-              </h1>
-              <p className="text-gray-600 mt-1">Stay organized and productive</p>
-            </div>
-            <button
-              onClick={() => handleOpenForm()}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
-            >
-              <Plus size={20} />
-              New Task
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="h-screen w-full bg-[#0b1326] flex overflow-hidden font-sans">
+      
+      {/* Left Sidebar */}
+      <Sidebar onNewTask={() => handleOpenForm()} />
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      {/* Center Workspace */}
+      <main className="flex-1 h-full overflow-y-auto px-8 py-8 custom-scrollbar">
+        {/* Workspace Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Good morning, Alex!</h1>
+          <p className="text-gray-400">
+            You have <span className="text-white font-semibold">{tasks.filter(t => !t.isCompleted).length} tasks</span> to complete today. Let's make it productive.
+          </p>
+        </div>
+
         {loading ? (
           <div className="flex justify-center items-center py-16">
-            <Loader className="animate-spin text-blue-600" size={40} />
+            <Loader className="animate-spin text-indigo-500" size={40} />
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Stats */}
+          <div className="space-y-8">
+            {/* Summary Cards */}
             <StatsCard />
 
-            {/* Filters */}
+            {/* Task Filters (Tabs) */}
             <TaskFilters />
 
             {/* Task List */}
-            <TaskList tasks={filteredTasks} onEdit={handleOpenForm} />
+            <div className="glass-panel p-6 rounded-2xl">
+              <TaskList tasks={filteredTasks} onEdit={handleOpenForm} />
+            </div>
           </div>
         )}
       </main>
+
+      {/* Right Panel */}
+      <RightPanel />
 
       {/* Task Form Modal */}
       {showForm && (
