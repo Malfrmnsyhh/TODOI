@@ -41,7 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 # agent md
-AGENTS.md
-CLAUDE.md
-CODEX.md
+/AGENTS.md
+/CLAUDE.md
+/CODEX.md
 
