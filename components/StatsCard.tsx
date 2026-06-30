@@ -40,7 +40,7 @@ const StatsCard: React.FC = () => {
             <div className="w-8 h-8 rounded-full bg-blue-500/20 border border-blue-500/50 backdrop-blur-sm"></div>
           </div>
         </div>
-      </div>
+      </div>1 
 
       {/* Completion Rate */}
       <div className="glass-panel p-6 rounded-2xl flex items-center justify-between">

@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import jwt from 'jsonwebtoken';
 
-let tasks: any[] = [];
+const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-focusflow-2024';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const resolvedParams = await params;
-  const task = tasks.find((t) => t.id === resolvedParams.id);
-
-  if (!task) {
-    return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+async function getAuthenticatedUserId(request: NextRequest): Promise<string | null> {
+  const token = request.cookies.get('auth_token')?.value;
+  if (!token) return null;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    return decoded.userId;
+  } catch {
+    return null;
   }
-
-  return NextResponse.json(task);
 }
 
 export async function PUT(
@@ -21,28 +20,34 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const resolvedParams = await params;
-    const body = await request.json();
-    const index = tasks.findIndex((t) => t.id === resolvedParams.id);
-
-    if (index === -1) {
-      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    const { id } = await params;
+    const userId = await getAuthenticatedUserId(request);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const updated = {
-      ...tasks[index],
-      ...body,
-      updatedAt: new Date().toISOString(),
-    };
+    const body = await request.json();
+    const taskExists = await prisma.task.findFirst({ where: { id, userId } });
+    if (!taskExists) {
+      return NextResponse.json({ error: 'Tugas tidak ditemukan' }, { status: 404 });
+    }
 
-    tasks[index] = updated;
+    const updatedTask = await prisma.task.update({
+      where: { id },
+      data: {
+        title: body.title,
+        description: body.description,
+        category: body.category,
+        priority: body.priority,
+        dueDate: body.dueDate,
+        isCompleted: body.isCompleted,
+      },
+    });
 
-    return NextResponse.json(updated);
+    return NextResponse.json(updatedTask);
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update task' },
-      { status: 400 }
-    );
+    console.error('Update task error:', error);
+    return NextResponse.json({ error: 'Gagal memperbarui tugas' }, { status: 500 });
   }
 }
 
@@ -51,13 +56,22 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const resolvedParams = await params;
-    tasks = tasks.filter((t) => t.id !== resolvedParams.id);
-    return NextResponse.json({ success: true });
+    const { id } = await params;
+    const userId = await getAuthenticatedUserId(request);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const taskExists = await prisma.task.findFirst({ where: { id, userId } });
+    if (!taskExists) {
+      return NextResponse.json({ error: 'Tugas tidak ditemukan' }, { status: 404 });
+    }
+
+    await prisma.task.delete({ where: { id } });
+
+    return NextResponse.json({ success: true, message: 'Tugas berhasil dihapus' });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to delete task' },
-      { status: 500 }
-    );
+    console.error('Delete task error:', error);
+    return NextResponse.json({ error: 'Gagal menghapus tugas' }, { status: 500 });
   }
 }

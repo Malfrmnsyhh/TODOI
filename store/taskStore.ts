@@ -1,11 +1,19 @@
-import {create} from 'zustand';
-import {Task, FilterState} from '@/lib/types';
+import { create } from 'zustand';
+import { Task, FilterState } from '@/lib/types';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 interface TaskStore {
   tasks: Task[];
   filters: FilterState;
   loading: boolean;
+  user: User | null;
 
+  setUser: (user: User | null) => void;
   setTasks: (tasks: Task[]) => void;
   addTask: (task: Task) => void;
   updateTask: (id: string, task: Partial<Task>) => void;
@@ -19,7 +27,7 @@ interface TaskStore {
 
   // computed
   getFilteredTasks: () => Task[];
-  getStats:() => {
+  getStats: () => {
     total: number;
     completed: number;
     pending: number;
@@ -39,71 +47,48 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   tasks: [],
   filters: initialFilters,
   loading: false,
+  user: null,
 
-    // Ubah bagian actions menjadi seperti ini:
-  
-  setTasks: (tasks) => {
-    set({ tasks });
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-    }
-  },
+  setUser: (user) => set({ user }),
+
+  setTasks: (tasks) => set({ tasks }),
 
   addTask: (task) =>
-    set((state) => {
-      const newTasks = [task, ...state.tasks];
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('tasks', JSON.stringify(newTasks));
-      }
-      return { tasks: newTasks };
-    }),
+    set((state) => ({ tasks: [task, ...state.tasks] })),
 
   updateTask: (id, updates) =>
-    set((state) => {
-      const newTasks = state.tasks.map((t) =>
-        t.id === id ? { ...t, ...updates } : t
-      );
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('tasks', JSON.stringify(newTasks));
-      }
-      return { tasks: newTasks };
-    }),
-
-  deleteTask: (id) =>
-    set((state) => {
-      const newTasks = state.tasks.filter((t) => t.id !== id);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('tasks', JSON.stringify(newTasks));
-      }
-      return { tasks: newTasks };
-    }),
-
-  toggleTask: (id) =>
-    set((state) => {
-      const newTasks = state.tasks.map((t) =>
-        t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
-      );
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('tasks', JSON.stringify(newTasks));
-      }
-      return { tasks: newTasks };
-    }),
-  
-  setFilters: (filters) =>
     set((state) => ({
-      filters: {...state.filters, ...filters },
+      tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)),
     })),
 
-  resetFilters: () => set ({ filters: initialFilters }),
+  deleteTask: (id) =>
+    set((state) => ({
+      tasks: state.tasks.filter((t) => t.id !== id),
+    })),
 
-  setLoading: (loading) => set ({ loading }),
+  toggleTask: (id) =>
+    set((state) => ({
+      tasks: state.tasks.map((t) =>
+        t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
+      ),
+    })),
+
+  setFilters: (filters) =>
+    set((state) => ({
+      filters: { ...state.filters, ...filters },
+    })),
+
+  resetFilters: () => set({ filters: initialFilters }),
+
+  setLoading: (loading) => set({ loading }),
 
   getFilteredTasks: () => {
     const { tasks, filters } = get();
     return tasks
       .filter((task) => {
-        if(
-          filters.searchQuery && !task.title.toLowerCase().includes(filters.searchQuery.toLowerCase())
+        if (
+          filters.searchQuery &&
+          !task.title.toLowerCase().includes(filters.searchQuery.toLowerCase())
         ) {
           return false;
         }
@@ -111,7 +96,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
           return false;
         }
         if (filters.priority && task.priority !== filters.priority) {
-          return false; 
+          return false;
         }
         if (filters.status === 'completed' && !task.isCompleted) {
           return false;
@@ -121,7 +106,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         }
         if (
           filters.status === 'overdue' &&
-          (!task.dueDate || new Date (task.dueDate) >= new Date())
+          (!task.dueDate || new Date(task.dueDate) >= new Date())
         ) {
           return false;
         }
@@ -135,9 +120,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         if (filters.sortBy === 'date') {
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
-          return (new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
         }
-        return (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
   },
 
@@ -150,8 +135,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       total: tasks.length,
       completed: tasks.filter((t) => t.isCompleted).length,
       pending: tasks.filter((t) => !t.isCompleted).length,
-      overdue: tasks.filter((t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) < today).length,
+      overdue: tasks.filter(
+        (t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) < today
+      ).length,
     };
   },
 }));
-

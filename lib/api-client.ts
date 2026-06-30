@@ -4,27 +4,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // fetch all tasks
 export async function fetchTasks(): Promise<Task[]> {
-  try {
-    const response = await fetch(`${API_URL}/tasks`, {
-      cache: 'no-store',
-    });
-    if (!response.ok) throw new Error('Failed to fetch tasks');
-    return response.json();
-  } catch (error) {
-    console.error('Fetch tasks error:', error);
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('tasks');
-      return stored ? JSON.parse(stored) : [];
-    }
-    return [];
-  }
+  const response = await fetch(`${API_URL}/tasks`, { cache: 'no-store' });
+  if (!response.ok) return [];
+  return response.json();
 }
 
 // create task
-export async function createTask(task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> {
+export async function createTask(task: Omit<Task, 'id' | 'isCompleted' | 'createdAt' | 'updatedAt'>): Promise<Task> {
   const response = await fetch(`${API_URL}/tasks`, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(task),
   });
   if (!response.ok) throw new Error('Failed to create task');

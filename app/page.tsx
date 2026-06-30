@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTaskStore } from '@/store/taskStore';
 import { Task } from '@/lib/types';
 import { fetchTasks, createTask, updateTask, deleteTask } from '@/lib/api-client';
@@ -13,6 +14,7 @@ import RightPanel from '@/components/RightPanel';
 import { Loader } from 'lucide-react';
 
 export default function Home() {
+  const router = useRouter();
   const {
     tasks,
     setTasks,
@@ -22,6 +24,8 @@ export default function Home() {
     getFilteredTasks,
     loading,
     setLoading,
+    user,
+    setUser,
   } = useTaskStore();
 
   const [showForm, setShowForm] = useState(false);
@@ -37,8 +41,29 @@ export default function Home() {
     setEditingTask(undefined);
   };
 
-  // Load tasks on mount
+  // Check auth session on mount
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) {
+          router.push('/login');
+          return;
+        }
+        const data = await res.json();
+        setUser(data.user);
+      } catch {
+        router.push('/login');
+      }
+    };
+
+    checkAuth();
+  }, [router, setUser]);
+
+  // Load tasks only when user is authenticated
+  useEffect(() => {
+    if (!user) return;
+
     const loadTasks = async () => {
       setLoading(true);
       try {
@@ -46,13 +71,14 @@ export default function Home() {
         setTasks(data);
       } catch (error) {
         console.error('Error loading tasks:', error);
+        setTasks([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadTasks();
-  }, [setTasks, setLoading]);
+  }, [user, setTasks, setLoading]);
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -70,46 +96,20 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [showForm]);
 
-
-  const handleAddTask = async (formData: any) => {
+  const handleAddTask = async (formData: Omit<Task, 'id' | 'isCompleted' | 'createdAt' | 'updatedAt'>) => {
     try {
-      const newTask: Task = {
-        id: Date.now().toString(),
-        ...formData,
-        isCompleted: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      try {
-        const response = await createTask(formData);
-        addTask(response);
-      } catch {
-        addTask(newTask);
-      }
-
+      const response = await createTask(formData);
+      addTask(response);
       setShowForm(false);
     } catch (error) {
       console.error('Error creating task:', error);
     }
   };
 
-  const handleEditTask = async (formData: any) => {
+  const handleEditTask = async (formData: Omit<Task, 'id' | 'isCompleted' | 'createdAt' | 'updatedAt'>) => {
     if (!editingTask) return;
-
     try {
-      const updated: Task = {
-        ...editingTask,
-        ...formData,
-        updatedAt: new Date().toISOString(),
-      };
-
-      try {
-        await updateTask(editingTask.id, formData);
-      } catch {
-        // Fallback local
-      }
-
+      const updated = await updateTask(editingTask.id, formData);
       storeUpdateTask(editingTask.id, updated);
       setEditingTask(undefined);
       setShowForm(false);
@@ -120,19 +120,34 @@ export default function Home() {
 
   const filteredTasks = getFilteredTasks();
 
+  // Show loading spinner while checking auth
+  if (!user && !loading) {
+    return (
+      <div className="h-screen w-full bg-[#0b1326] flex items-center justify-center">
+        <Loader className="animate-spin text-indigo-500" size={40} />
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen w-full bg-[#0b1326] flex overflow-hidden font-sans">
-      
+
       {/* Left Sidebar */}
       <Sidebar onNewTask={() => handleOpenForm()} />
 
       {/* Center Workspace */}
-      <main className="flex-1 h-full overflow-y-auto px-8 py-8 custom-scrollbar">
+      <main className="flex-1 h-full overflow-y-auto px-8 py-8">
         {/* Workspace Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Good morning, Alex!</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Good morning, {user?.name?.split(' ')[0] || 'User'}!
+          </h1>
           <p className="text-gray-400">
-            You have <span className="text-white font-semibold">{tasks.filter(t => !t.isCompleted).length} tasks</span> to complete today. Let's make it productive.
+            You have{' '}
+            <span className="text-white font-semibold">
+              {tasks.filter((t) => !t.isCompleted).length} tasks
+            </span>{' '}
+            to complete today. Let&apos;s make it productive.
           </p>
         </div>
 
@@ -142,13 +157,8 @@ export default function Home() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* Summary Cards */}
             <StatsCard />
-
-            {/* Task Filters (Tabs) */}
             <TaskFilters />
-
-            {/* Task List */}
             <div className="glass-panel p-6 rounded-2xl">
               <TaskList tasks={filteredTasks} onEdit={handleOpenForm} />
             </div>

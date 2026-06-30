@@ -10,7 +10,7 @@ export interface Task {
   dueDate?: string;
   isCompleted: boolean;
   createdAt: string;
-  updateAt: string;
+  updatedAt: string;
 }
 
 export interface Category {
