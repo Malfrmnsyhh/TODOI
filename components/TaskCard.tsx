@@ -21,8 +21,8 @@ const TaskCard: React.FC<Props> = ({ task, onEdit }) => {
   return (
     <div
       className={`
-        bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition
-        border-l-4 ${
+        bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition animate-fade-in
+        border-l-4  ${
           task.isCompleted
             ? 'border-l-green-500 opacity-60'
             : 'border-l-blue-500'

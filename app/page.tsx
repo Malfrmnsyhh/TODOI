@@ -25,6 +25,16 @@ export default function Home() {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
 
+  const handleOpenForm = (task?: Task) => {
+    setEditingTask(task);
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setEditingTask(undefined);
+  };
+
   // Load tasks on mount
   useEffect(() => {
     const loadTasks = async () => {
@@ -41,6 +51,25 @@ export default function Home() {
 
     loadTasks();
   }, [setTasks, setLoading]);
+
+  // Tambahkan kode ini di dalam komponen Home, di bawah useEffect loadTasks:
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + N untuk memunculkan modal New Task
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        handleOpenForm();
+      }
+      // Tombol Escape untuk menutup modal
+      if (e.key === 'Escape') {
+        handleCloseForm();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [showForm]);
+
 
   const handleAddTask = async (formData: any) => {
     try {
@@ -90,15 +119,6 @@ export default function Home() {
     }
   };
 
-  const handleOpenForm = (task?: Task) => {
-    setEditingTask(task);
-    setShowForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setEditingTask(undefined);
-  };
 
   const filteredTasks = getFilteredTasks();
 

@@ -40,29 +40,54 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   filters: initialFilters,
   loading: false,
 
-  setTasks: (tasks) => set({ tasks }),
+    // Ubah bagian actions menjadi seperti ini:
+  
+  setTasks: (tasks) => {
+    set({ tasks });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+  },
 
   addTask: (task) =>
-    set((state) => ({ tasks: [task, ...state.tasks] })),
+    set((state) => {
+      const newTasks = [task, ...state.tasks];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tasks', JSON.stringify(newTasks));
+      }
+      return { tasks: newTasks };
+    }),
 
   updateTask: (id, updates) =>
-    set((state) => ({
-      tasks: state.tasks.map((t) =>
-        t.id === id ? {...t, ...updates} : t
-      ),
-    })),
+    set((state) => {
+      const newTasks = state.tasks.map((t) =>
+        t.id === id ? { ...t, ...updates } : t
+      );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tasks', JSON.stringify(newTasks));
+      }
+      return { tasks: newTasks };
+    }),
 
   deleteTask: (id) =>
-    set((state) => ({
-      tasks: state.tasks.filter((t) => t.id !== id),
-    })),
+    set((state) => {
+      const newTasks = state.tasks.filter((t) => t.id !== id);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tasks', JSON.stringify(newTasks));
+      }
+      return { tasks: newTasks };
+    }),
 
   toggleTask: (id) =>
-    set((state) => ({
-      tasks: state.tasks.map((t) =>
-      t.id === id ? {...t, isCompleted: !t.isCompleted} : t
-    ),
-    })),
+    set((state) => {
+      const newTasks = state.tasks.map((t) =>
+        t.id === id ? { ...t, isCompleted: !t.isCompleted } : t
+      );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tasks', JSON.stringify(newTasks));
+      }
+      return { tasks: newTasks };
+    }),
   
   setFilters: (filters) =>
     set((state) => ({

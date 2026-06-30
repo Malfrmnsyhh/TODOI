@@ -29,7 +29,7 @@ const TaskForm: React.FC<Props> = ({ task, onSubmit, onClose }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<TaskFormData>({
+  } = useForm({
     resolver: zodResolver(taskSchema),
     defaultValues: {
       title: task?.title || '',
