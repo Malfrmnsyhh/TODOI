@@ -1,65 +1,158 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useTaskStore } from '@/store/taskStore';
+import { Task } from '@/lib/types';
+import { fetchTasks, createTask, updateTask, deleteTask } from '@/lib/api-client';
+import TaskForm from '@/components/TaskForm';
+import TaskList from '@/components/TaskList';
+import TaskFilters from '@/components/TaskFilters';
+import StatsCard from '@/components/StatsCard';
+import { Plus, Loader } from 'lucide-react';
 
 export default function Home() {
+  const {
+    tasks,
+    setTasks,
+    addTask,
+    updateTask: storeUpdateTask,
+    deleteTask: storeDeleteTask,
+    getFilteredTasks,
+    loading,
+    setLoading,
+  } = useTaskStore();
+
+  const [showForm, setShowForm] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | undefined>();
+
+  // Load tasks on mount
+  useEffect(() => {
+    const loadTasks = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchTasks();
+        setTasks(data);
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTasks();
+  }, [setTasks, setLoading]);
+
+  const handleAddTask = async (formData: any) => {
+    try {
+      const newTask: Task = {
+        id: Date.now().toString(),
+        ...formData,
+        isCompleted: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Coba simpan lewat API (jika error, simpan lokal)
+      try {
+        const response = await createTask(formData);
+        addTask(response);
+      } catch {
+        addTask(newTask);
+      }
+
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
+
+  const handleEditTask = async (formData: any) => {
+    if (!editingTask) return;
+
+    try {
+      const updated: Task = {
+        ...editingTask,
+        ...formData,
+        updatedAt: new Date().toISOString(),
+      };
+
+      try {
+        await updateTask(editingTask.id, formData);
+      } catch {
+        // Fallback local
+      }
+
+      storeUpdateTask(editingTask.id, updated);
+      setEditingTask(undefined);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  };
+
+  const handleOpenForm = (task?: Task) => {
+    setEditingTask(task);
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setEditingTask(undefined);
+  };
+
+  const filteredTasks = getFilteredTasks();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 animate-fade-in">
+      {/* Header */}
+      <header className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                My Tasks
+              </h1>
+              <p className="text-gray-600 mt-1">Stay organized and productive</p>
+            </div>
+            <button
+              onClick={() => handleOpenForm()}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <Plus size={20} />
+              New Task
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {loading ? (
+          <div className="flex justify-center items-center py-16">
+            <Loader className="animate-spin text-blue-600" size={40} />
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Stats */}
+            <StatsCard />
+
+            {/* Filters */}
+            <TaskFilters />
+
+            {/* Task List */}
+            <TaskList tasks={filteredTasks} onEdit={handleOpenForm} />
+          </div>
+        )}
       </main>
+
+      {/* Task Form Modal */}
+      {showForm && (
+        <TaskForm
+          task={editingTask}
+          onSubmit={editingTask ? handleEditTask : handleAddTask}
+          onClose={handleCloseForm}
+        />
+      )}
     </div>
   );
 }
