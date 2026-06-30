@@ -51,7 +51,7 @@ export default function LoginPage() {
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white">TodoOI</h1>
+          <h1 className="text-3xl font-bold text-white">TODOI</h1>
           <p className="text-gray-400 mt-2">Selamat datang kembali</p>
         </div>
 

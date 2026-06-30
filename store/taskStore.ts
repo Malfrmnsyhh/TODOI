@@ -5,6 +5,8 @@ interface User {
   id: string;
   name: string;
   email: string;
+  photoUrl?: string | null;
+  bio?: string | null;
 }
 
 interface TaskStore {

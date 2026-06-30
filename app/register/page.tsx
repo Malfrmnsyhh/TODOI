@@ -61,7 +61,7 @@ export default function RegisterPage() {
 
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white">FocusFlow</h1>
+          <h1 className="text-3xl font-bold text-white">TODOI</h1>
           <p className="text-gray-400 mt-2">Buat akun baru, gratis!</p>
         </div>
 
