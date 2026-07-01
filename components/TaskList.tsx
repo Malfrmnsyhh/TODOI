@@ -22,7 +22,7 @@ const TaskList: React.FC<Props> = ({ tasks, onEdit }) => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="divide-y divide-white/5">
       {tasks.map((task) => (
         <div key={task.id} className="animate-slide-in">
           <TaskCard task={task} onEdit={onEdit} />

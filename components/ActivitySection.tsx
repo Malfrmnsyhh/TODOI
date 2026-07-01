@@ -50,7 +50,7 @@ export default function ActivitySection() {
 
   const displayData = tasks.length === 0 ? demoData : getChartData();
 
-  // Count streak: consecutive days with at least 1 completed task
+  // Count streak
   const streak = (() => {
     let count = 0;
     const today = new Date();
@@ -74,7 +74,7 @@ export default function ActivitySection() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-base md:text-lg font-semibold text-white">Aktivitas 7 Hari</h2>
+          <h2 className="text-base md:text-2xl font-bold text-white">Aktivitas 7 Hari</h2>
           <p className="text-xs text-gray-500 mt-0.5">Tugas selesai & dibuat per hari</p>
         </div>
         <div className="flex items-center gap-3">

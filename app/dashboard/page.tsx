@@ -184,7 +184,7 @@ export default function DashboardPage() {
               {/* Header */}
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                  {greeting()}, {user?.name?.split(' ')[0] || 'User'}! 👋
+                  {greeting()}, {user?.name?.split(' ')[0] || 'User'} 
                 </h1>
                 <p className="text-gray-400 text-sm md:text-base">
                   Kamu punya{' '}
@@ -202,26 +202,33 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-6 md:space-y-8">
                   {/* Stats Grid — 4 cards */}
+                  <div className='mt-8'>
                   <StatsGrid />
+                  </div>
 
                   {/* Activity Chart */}
-                  <ActivitySection />
+                  <div className='mt-8'>
+                    <ActivitySection />
+                  </div>
 
                   {/* Task List Section */}
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-semibold text-white">Daftar Tugas</h2>
+                    <div className="flex items-center justify-between mb-4 mt-17">
+                      <h2 className="text-2xl font-bold text-white">Daftar Tugas</h2>
                       <button
                         onClick={() => handleOpenForm()}
                         className="hidden md:flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/30"
                       >
-                        <Plus size={16} />
-                        Tugas Baru
+                        <Plus size={18} />
+                        Tambah Tugas
                       </button>
                     </div>
-                    <TaskFilters />
-                    <div className="mt-4 glass-panel p-4 md:p-6 rounded-2xl">
-                      <TaskList tasks={filteredTasks} onEdit={handleOpenForm} />
+                    
+                    <div className="bg-[#0F172A] border border-white/5 p-4 md:p-6 rounded-2xl">
+                      <TaskFilters />
+                      <div className="mt-4">
+                        <TaskList tasks={filteredTasks} onEdit={handleOpenForm} />
+                      </div>
                     </div>
                   </div>
                 </div>

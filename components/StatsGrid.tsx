@@ -32,7 +32,7 @@ const StatsGrid: React.FC = () => {
       badgeColor: 'text-emerald-400 bg-emerald-400/10',
     },
     {
-      label: 'Pending',
+      label: 'Tertunda',
       value: stats.pending,
       icon: Clock,
       gradient: 'from-amber-600/30 to-amber-600/5',
@@ -41,7 +41,7 @@ const StatsGrid: React.FC = () => {
       badge: null,
     },
     {
-      label: 'Overdue',
+      label: 'Jatuh Tempo',
       value: stats.overdue,
       icon: AlertTriangle,
       gradient: 'from-rose-600/30 to-rose-600/5',
