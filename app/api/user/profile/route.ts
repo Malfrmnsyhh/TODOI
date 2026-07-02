@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-focusflow-2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'CoKkilagiDuDuk_123';
 
 function getUserIdFromRequest(request: NextRequest): string | null {
   const token = request.cookies.get('auth_token')?.value;
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true, photoUrl: true, bio: true },
+      select: { id: true, name: true, nickname: true, email: true, photoUrl: true, bio: true },
     });
 
     if (!user) {
@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ user });
   } catch (error) {
     console.error('Get profile error:', error);
-    return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: 'Failed to fetch profile', detail: msg }, { status: 500 });
   }
 }
 
@@ -48,21 +49,23 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, bio, photoUrl } = body;
+    const { name, nickname, bio, photoUrl } = body;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
         ...(name !== undefined && { name }),
+        ...(nickname !== undefined && { nickname: nickname || null }),
         ...(bio !== undefined && { bio }),
         ...(photoUrl !== undefined && { photoUrl }),
       },
-      select: { id: true, name: true, email: true, photoUrl: true, bio: true },
+      select: { id: true, name: true, nickname: true, email: true, photoUrl: true, bio: true },
     });
 
     return NextResponse.json({ user: updatedUser });
   } catch (error) {
     console.error('Update profile error:', error);
-    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: 'Failed to update profile', detail: msg }, { status: 500 });
   }
 }

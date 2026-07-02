@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-focusflow-2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'CoKkilagiDuDuk_123';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, name: true, email: true, photoUrl: true, bio: true },
+      select: { id: true, name: true, nickname: true, email: true, photoUrl: true, bio: true },
     });
 
     if (!user) {

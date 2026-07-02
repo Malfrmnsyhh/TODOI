@@ -1,23 +1,33 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Bell, LogOut } from 'lucide-react';
-import { useTaskStore } from '@/store/taskStore';
-import { useRouter } from 'next/navigation';
-import ActivityChart from './ActivityChart';
+import React, { useState } from "react";
+import { ChevronLeft, ChevronRight, Bell, LogOut } from "lucide-react";
+import { useTaskStore } from "@/store/taskStore";
+import { useRouter } from "next/navigation";
+import ActivityChart from "./ActivityChart";
 
 export default function RightPanel() {
   const { tasks, user, setUser, setTasks } = useTaskStore();
   const router = useRouter();
-  const days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const days = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
   ];
 
   const getDaysInMonth = () => {
@@ -25,7 +35,11 @@ export default function RightPanel() {
     const numDays = new Date(year, month + 1, 0).getDate();
     const numDaysPrev = new Date(year, month, 0).getDate();
 
-    const datesList: { date: number; isCurrentMonth: boolean; fullDate: Date }[] = [];
+    const datesList: {
+      date: number;
+      isCurrentMonth: boolean;
+      fullDate: Date;
+    }[] = [];
 
     for (let i = firstDayIndex - 1; i >= 0; i--) {
       datesList.push({
@@ -36,12 +50,20 @@ export default function RightPanel() {
     }
 
     for (let i = 1; i <= numDays; i++) {
-      datesList.push({ date: i, isCurrentMonth: true, fullDate: new Date(year, month, i) });
+      datesList.push({
+        date: i,
+        isCurrentMonth: true,
+        fullDate: new Date(year, month, i),
+      });
     }
 
     const remaining = 42 - datesList.length;
     for (let i = 1; i <= remaining; i++) {
-      datesList.push({ date: i, isCurrentMonth: false, fullDate: new Date(year, month + 1, i) });
+      datesList.push({
+        date: i,
+        isCurrentMonth: false,
+        fullDate: new Date(year, month + 1, i),
+      });
     }
 
     return datesList;
@@ -49,12 +71,12 @@ export default function RightPanel() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch("/api/auth/logout", { method: "POST" });
       setUser(null);
       setTasks([]);
-      router.push('/login');
+      router.push("/login");
     } catch (err) {
-      console.error('Logout gagal:', err);
+      console.error("Logout gagal:", err);
     }
   };
 
@@ -62,36 +84,37 @@ export default function RightPanel() {
   const today = new Date();
 
   return (
-    <aside className="w-80 flex-shrink-0 flex flex-col p-6 bg-[#0b1326] border-l border-white/10 hidden lg:flex overflow-y-auto">
+    <aside className="w-84 flex-shrink-0 flex flex-col p-6 bg-[#0b1326] border-l border-white/10 hidden lg:flex overflow-y-auto">
       {/* Top bar */}
-      <div className="flex justify-between items-center mb-8 text-gray-400">
-        <div>
-          {user && (
-            <button
-              onClick={handleLogout}
-              title="Logout"
-              className="hover:text-red-400 transition flex items-center gap-1.5 text-xs font-medium"
-            >
-              <LogOut size={14} />
-              Logout
-            </button>
-          )}
-        </div>
+      <div className="flex justify-between items-center mb-7 text-gray-400">
         <button className="hover:text-white transition relative">
           <Bell size={20} />
-          {tasks.filter((t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) < new Date()).length > 0 && (
+          {tasks.filter(
+            (t) =>
+              !t.isCompleted && t.dueDate && new Date(t.dueDate) < new Date(),
+          ).length > 0 && (
             <span className="absolute top-0 right-0 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
           )}
         </button>
+        {user && (
+          <button
+            onClick={handleLogout}
+            title="Logout"
+            className="hover:text-red-400 transition flex items-center gap-1.5 text-xs font-medium"
+          >
+            <LogOut size={14} />
+            Keluar
+          </button>
+        )}
       </div>
 
       {/* Dynamic Calendar */}
-      <div className="glass-panel p-5 rounded-2xl">
-        <div className="flex justify-between items-center mb-5">
+      <div className="glass-panel p-4 rounded-2xl">
+        <div className="flex justify-between items-center mb-3">
           <h3 className="text-white font-semibold text-sm">
             {monthNames[month]} {year}
           </h3>
-          <div className="flex gap-1 text-gray-400">
+          <div className="flex gap-1 text-gray-100">
             <button
               onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
               className="hover:text-white p-1 rounded hover:bg-white/5 transition"
@@ -109,7 +132,9 @@ export default function RightPanel() {
 
         <div className="grid grid-cols-7 gap-y-2 gap-x-1 text-center text-xs">
           {days.map((day) => (
-            <div key={day} className="text-gray-500 font-medium py-1">{day}</div>
+            <div key={day} className="text-gray-500 font-medium py-1">
+              {day}
+            </div>
           ))}
 
           {dates.map((item, i) => {
@@ -118,7 +143,10 @@ export default function RightPanel() {
 
             const hasTask = tasks.some((task) => {
               if (!task.dueDate || task.isCompleted) return false;
-              return new Date(task.dueDate).toDateString() === item.fullDate.toDateString();
+              return (
+                new Date(task.dueDate).toDateString() ===
+                item.fullDate.toDateString()
+              );
             });
 
             return (
@@ -126,8 +154,8 @@ export default function RightPanel() {
                 <div
                   className={`
                     w-7 h-7 flex items-center justify-center rounded-full mx-auto transition-all
-                    ${isToday ? 'bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-500/40' : ''}
-                    ${!item.isCurrentMonth ? 'text-gray-700' : isToday ? '' : 'text-gray-300 hover:bg-white/10 cursor-pointer'}
+                    ${isToday ? "bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-500/40" : ""}
+                    ${!item.isCurrentMonth ? "text-gray-700" : isToday ? "" : "text-gray-300 hover:bg-white/10 cursor-pointer"}
                   `}
                 >
                   {item.date}
@@ -142,8 +170,10 @@ export default function RightPanel() {
       </div>
 
       {/* Activity Chart */}
-      <div className="mt-6 flex-1 glass-panel rounded-2xl p-5 flex flex-col min-h-0">
-        <h3 className="text-white font-semibold mb-4 text-sm">Activity History</h3>
+      <div className="mt-4 flex-1 glass-panel rounded-2xl p-4 flex flex-col min-h-0">
+        <h3 className="text-white font-semibold mb-3 text-sm">
+          Riwayat Aktivitas
+        </h3>
         <div className="flex-1">
           <ActivityChart />
         </div>

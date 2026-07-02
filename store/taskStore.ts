@@ -4,6 +4,7 @@ import { Task, FilterState } from '@/lib/types';
 interface User {
   id: string;
   name: string;
+  nickname?: string | null;
   email: string;
   photoUrl?: string | null;
   bio?: string | null;

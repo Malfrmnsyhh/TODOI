@@ -1,19 +1,24 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTaskStore } from '@/store/taskStore';
-import { Task } from '@/lib/types';
-import { fetchTasks, createTask, updateTask, deleteTask } from '@/lib/api-client';
-import TaskForm from '@/components/TaskForm';
-import TaskList from '@/components/TaskList';
-import TaskFilters from '@/components/TaskFilters';
-import Sidebar from '@/components/Sidebar';
-import RightPanel from '@/components/RightPanel';
-import StatsGrid from '@/components/StatsGrid';
-import ActivitySection from '@/components/ActivitySection';
-import MobileNav from '@/components/MobileNav';
-import { Loader, Plus, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useTaskStore } from "@/store/taskStore";
+import { Task } from "@/lib/types";
+import {
+  fetchTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "@/lib/api-client";
+import TaskForm from "@/components/TaskForm";
+import TaskList from "@/components/TaskList";
+import TaskFilters from "@/components/TaskFilters";
+import Sidebar from "@/components/Sidebar";
+import RightPanel from "@/components/RightPanel";
+import StatsGrid from "@/components/StatsGrid";
+import ActivitySection from "@/components/ActivitySection";
+import MobileNav from "@/components/MobileNav";
+import { Loader, Plus, Menu, X } from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -47,15 +52,15 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/auth/me');
+        const res = await fetch("/api/auth/me");
         if (!res.ok) {
-          router.push('/login');
+          router.push("/login");
           return;
         }
         const data = await res.json();
         setUser(data.user);
       } catch {
-        router.push('/login');
+        router.push("/login");
       }
     };
     checkAuth();
@@ -70,7 +75,7 @@ export default function DashboardPage() {
         const data = await fetchTasks();
         setTasks(data);
       } catch (error) {
-        console.error('Error loading tasks:', error);
+        console.error("Error loading tasks:", error);
         setTasks([]);
       } finally {
         setLoading(false);
@@ -82,30 +87,34 @@ export default function DashboardPage() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "n") {
         e.preventDefault();
         handleOpenForm();
       }
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         handleCloseForm();
         setSidebarOpen(false);
       }
     };
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
   }, [showForm]);
 
-  const handleAddTask = async (formData: Omit<Task, 'id' | 'isCompleted' | 'createdAt' | 'updatedAt'>) => {
+  const handleAddTask = async (
+    formData: Omit<Task, "id" | "isCompleted" | "createdAt" | "updatedAt">,
+  ) => {
     try {
       const response = await createTask(formData);
       addTask(response);
       setShowForm(false);
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error("Error creating task:", error);
     }
   };
 
-  const handleEditTask = async (formData: Omit<Task, 'id' | 'isCompleted' | 'createdAt' | 'updatedAt'>) => {
+  const handleEditTask = async (
+    formData: Omit<Task, "id" | "isCompleted" | "createdAt" | "updatedAt">,
+  ) => {
     if (!editingTask) return;
     try {
       const updated = await updateTask(editingTask.id, formData);
@@ -113,7 +122,7 @@ export default function DashboardPage() {
       setEditingTask(undefined);
       setShowForm(false);
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
     }
   };
 
@@ -129,14 +138,13 @@ export default function DashboardPage() {
 
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return 'Selamat pagi';
-    if (h < 17) return 'Selamat siang';
-    return 'Selamat malam';
+    if (h < 12) return "Selamat pagi";
+    if (h < 17) return "Selamat siang";
+    return "Selamat malam";
   };
 
   return (
     <div className="h-screen w-full bg-[#0b1326] flex overflow-hidden font-sans">
-      
       {/* ── Mobile Sidebar Overlay ── */}
       {sidebarOpen && (
         <div
@@ -149,15 +157,19 @@ export default function DashboardPage() {
       <div
         className={`
           fixed md:relative z-40 md:z-auto h-full transition-transform duration-300
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
-        <Sidebar onNewTask={() => { handleOpenForm(); setSidebarOpen(false); }} />
+        <Sidebar
+          onNewTask={() => {
+            handleOpenForm();
+            setSidebarOpen(false);
+          }}
+        />
       </div>
 
       {/* ── Main Area ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
         {/* Mobile Top Bar */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0b1326] flex-shrink-0">
           <button
@@ -177,21 +189,20 @@ export default function DashboardPage() {
 
         {/* Content Row: Main (scrollable) + RightPanel (fixed) */}
         <div className="flex flex-1 overflow-hidden">
-
           {/* Main Content (scrollable) */}
           <main className="flex-1 overflow-y-auto">
             <div className="px-4 md:px-8 py-6 md:py-8">
-
               {/* Header */}
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                  {greeting()}, {user?.name?.split(' ')[0] || 'User'} 
+                  {greeting()},{" "}
+                  {user?.nickname || user?.name?.split(" ")[0] || "User"}!
                 </h1>
                 <p className="text-gray-400 text-sm md:text-base">
-                  Kamu punya{' '}
+                  Kamu punya{" "}
                   <span className="text-white font-semibold">
                     {tasks.filter((t) => !t.isCompleted).length} tugas
-                  </span>{' '}
+                  </span>{" "}
                   yang perlu diselesaikan hari ini.
                 </p>
               </div>
@@ -203,32 +214,30 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-6 md:space-y-8">
                   {/* Stats Grid — 4 cards */}
-                  <div className='mt-8'>
+                  <div className="mt-8">
                     <StatsGrid />
                   </div>
 
                   {/* Activity Chart */}
-                  <div className='mt-8'>
+                  <div className="mt-8">
                     <ActivitySection />
                   </div>
 
                   {/* Task List Section */}
                   <div>
-                    <div className="flex items-center justify-between mb-4 mt-17">
-                      <h2 className="text-2xl font-bold text-white">Daftar Tugas</h2>
-                      <button
-                        onClick={() => handleOpenForm()}
-                        className="hidden md:flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/30"
-                      >
-                        <Plus size={18} />
-                        Tambah Tugas
-                      </button>
+                    <div className="flex items-center justify-between mb-10 mt-10">
+                      <h2 className="text-4xl font-bold text-white">
+                        Daftar Tugas
+                      </h2>
                     </div>
-                    
+
                     <div className="bg-[#0F172A] border border-white/5 p-4 md:p-6 rounded-2xl">
                       <TaskFilters />
                       <div className="mt-4">
-                        <TaskList tasks={filteredTasks} onEdit={handleOpenForm} />
+                        <TaskList
+                          tasks={filteredTasks}
+                          onEdit={handleOpenForm}
+                        />
                       </div>
                     </div>
                   </div>
@@ -239,7 +248,6 @@ export default function DashboardPage() {
 
           {/* ── Right Panel (Desktop only) — OUTSIDE scrollable main ── */}
           <RightPanel />
-
         </div>
 
         {/* Mobile Bottom Nav */}

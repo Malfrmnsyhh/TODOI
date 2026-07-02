@@ -38,18 +38,7 @@ export default function ActivityChart() {
     });
   };
 
-  // Fallback demo data when no tasks exist
-  const demoData = [
-    { name: 'Min', Selesai: 2, Baru: 3 },
-    { name: 'Sen', Selesai: 4, Baru: 5 },
-    { name: 'Sel', Selesai: 3, Baru: 4 },
-    { name: 'Rab', Selesai: 5, Baru: 6 },
-    { name: 'Kam', Selesai: 4, Baru: 2 },
-    { name: 'Jum', Selesai: 6, Baru: 5 },
-    { name: 'Sab', Selesai: 7, Baru: 8 },
-  ];
-
-  const displayData = tasks.length === 0 ? demoData : getChartData();
+  const displayData = getChartData();
 
   return (
     <div className="w-full h-full flex flex-col">
