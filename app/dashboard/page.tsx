@@ -175,11 +175,12 @@ export default function DashboardPage() {
           </button>
         </header>
 
-        {/* Main Content (scrollable) */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="flex h-full">
-            {/* ── Center Workspace ── */}
-            <div className="flex-1 px-4 md:px-8 py-6 md:py-8 min-w-0">
+        {/* Content Row: Main (scrollable) + RightPanel (fixed) */}
+        <div className="flex flex-1 overflow-hidden">
+
+          {/* Main Content (scrollable) */}
+          <main className="flex-1 overflow-y-auto">
+            <div className="px-4 md:px-8 py-6 md:py-8">
 
               {/* Header */}
               <div className="mb-6 md:mb-8">
@@ -203,7 +204,7 @@ export default function DashboardPage() {
                 <div className="space-y-6 md:space-y-8">
                   {/* Stats Grid — 4 cards */}
                   <div className='mt-8'>
-                  <StatsGrid />
+                    <StatsGrid />
                   </div>
 
                   {/* Activity Chart */}
@@ -234,11 +235,12 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+          </main>
 
-            {/* ── Right Panel (Desktop only) ── */}
-            <RightPanel />
-          </div>
-        </main>
+          {/* ── Right Panel (Desktop only) — OUTSIDE scrollable main ── */}
+          <RightPanel />
+
+        </div>
 
         {/* Mobile Bottom Nav */}
         <MobileNav onNewTask={() => handleOpenForm()} />

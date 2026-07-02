@@ -62,7 +62,7 @@ export default function RightPanel() {
   const today = new Date();
 
   return (
-    <aside className="w-80 h-full flex flex-col p-6 bg-[#0b1326] border-l border-white/10 hidden lg:flex flex-shrink-0">
+    <aside className="w-80 flex-shrink-0 flex flex-col p-6 bg-[#0b1326] border-l border-white/10 hidden lg:flex overflow-y-auto">
       {/* Top bar */}
       <div className="flex justify-between items-center mb-8 text-gray-400">
         <div>
