@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, CheckSquare, Plus, BarChart2, User } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  CheckSquare,
+  Plus,
+  BarChart2,
+  User,
+} from "lucide-react";
 
 interface MobileNavProps {
   onNewTask: () => void;
@@ -13,24 +19,30 @@ export default function MobileNav({ onNewTask }: MobileNavProps) {
   const pathname = usePathname();
 
   const navItems = [
-    { href: '/dashboard', icon: LayoutDashboard, label: 'Home' },
-    { href: '/dashboard?filter=tasks', icon: CheckSquare, label: 'Tugas' },
-    { href: '/profile', icon: User, label: 'Profil' },
-    { href: '/dashboard?filter=analytics', icon: BarChart2, label: 'Analytics' },
+    { href: "/dashboard", icon: LayoutDashboard, label: "Home" },
+    { href: "/task", icon: CheckSquare, label: "Tugas" },
+    { href: "/profile", icon: User, label: "Profil" },
+    {
+      href: "/dashboard?filter=analytics",
+      icon: BarChart2,
+      label: "Analytics",
+    },
   ];
 
   return (
     <nav className="md:hidden flex-shrink-0 flex items-center justify-around bg-[#111827] border-t border-white/10 px-2 py-2 safe-area-inset-bottom">
       {/* First 2 items */}
       {navItems.slice(0, 2).map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(item.href.split('?')[0]);
+        const isActive =
+          pathname === item.href ||
+          pathname.startsWith(item.href.split("?")[0]);
         const Icon = item.icon;
         return (
           <Link
             key={item.href}
             href={item.href}
             className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all ${
-              isActive ? 'text-indigo-400' : 'text-gray-500 hover:text-gray-300'
+              isActive ? "text-indigo-400" : "text-gray-500 hover:text-gray-300"
             }`}
           >
             <Icon size={22} />
@@ -56,7 +68,7 @@ export default function MobileNav({ onNewTask }: MobileNavProps) {
             key={item.href}
             href={item.href}
             className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all ${
-              isActive ? 'text-indigo-400' : 'text-gray-500 hover:text-gray-300'
+              isActive ? "text-indigo-400" : "text-gray-500 hover:text-gray-300"
             }`}
           >
             <Icon size={22} />

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // 1. IMPORT INI
 import {
   LayoutDashboard,
   CheckSquare,
@@ -20,8 +21,19 @@ interface SidebarProps {
 export default function Sidebar({ onNewTask }: SidebarProps) {
   const { user } = useTaskStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  useEffect(() => {
+    const stored = localStorage.getItem("sidebar_collapsed");
+    if (stored !== null) {
+      setIsCollapsed(stored === "true");
+    }
+  }, []);
+  const handleToggleCollapse = () => {
+    const nextState = !isCollapsed;
+    setIsCollapsed(nextState);
+    localStorage.setItem("sidebar_collapsed", String(nextState));
+  };
+  const pathname = usePathname();
 
-  // Get initials from user name (e.g. "John Doe" -> "JD")
   const getInitials = (name?: string) => {
     if (!name) return "U";
     return name
@@ -32,11 +44,12 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
       .substring(0, 2);
   };
 
+  // 3. MENU DENGAN PATH ASLI
   const menuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, active: true },
-    { name: "My Tasks", icon: CheckSquare, active: false },
-    { name: "Analytics", icon: BarChart2, active: false },
-    { name: "Settings", icon: Settings, active: false },
+    { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+    { name: "Tugas Anda", icon: CheckSquare, href: "/task" },
+    { name: "Analitik", icon: BarChart2, href: "#" },
+    { name: "Pengaturan", icon: Settings, href: "#" },
   ];
 
   return (
@@ -47,7 +60,8 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
     >
       {/* Brand & Toggle */}
       <div
-        className={`flex items-center mb-10 transition-all duration-300 ${isCollapsed ? "justify-center" : "justify-between"}`}
+        onClick={handleToggleCollapse}
+        className={`flex items-center mb-10 cursor-pointer transition-all duration-300 ${isCollapsed ? "justify-center" : "justify-between"}`}
       >
         <h2
           className={`text-xl font-bold text-white whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out ${
@@ -56,8 +70,7 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
         >
           TODOI
         </h2>
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+        <div
           className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
@@ -66,7 +79,7 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
           ) : (
             <PanelLeftClose size={20} />
           )}
-        </button>
+        </div>
       </div>
 
       {/* Profile card */}
@@ -78,7 +91,6 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
           }`}
           title={isCollapsed ? "Edit Profil" : ""}
         >
-          {/* Avatar */}
           <div
             className={`${isCollapsed ? "w-8 h-8" : "w-10 h-10"} rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-500/30 group-hover:border-indigo-500 transition-all duration-300`}
           >
@@ -95,7 +107,6 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
             )}
           </div>
 
-          {/* Name & tagline */}
           <div
             className={`min-w-0 flex-1 whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out ${
               isCollapsed ? "w-0 opacity-0" : "opacity-100"
@@ -113,32 +124,38 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-2">
-        {menuItems.map((item) => (
-          <button
-            key={item.name}
-            title={isCollapsed ? item.name : ""}
-            className={`flex items-center rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden ${
-              isCollapsed
-                ? "justify-center w-full aspect-square"
-                : "w-full px-4 py-3 gap-3"
-            } ${
-              item.active
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <div className="flex-shrink-0">
-              <item.icon size={isCollapsed ? 20 : 18} />
-            </div>
-            <span
-              className={`whitespace-nowrap transition-all duration-300 ease-in-out ${
-                isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+        {menuItems.map((item) => {
+          // DETEKSI APAKAH MENU INI AKTIF SECARA REAL
+          const isActive = pathname === item.href;
+
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              title={isCollapsed ? item.name : ""}
+              className={`flex items-center rounded-lg text-sm font-medium transition-all duration-300 overflow-hidden ${
+                isCollapsed
+                  ? "justify-center w-full aspect-square"
+                  : "w-full px-4 py-3 gap-3"
+              } ${
+                isActive
+                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
+                  : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}
             >
-              {item.name}
-            </span>
-          </button>
-        ))}
+              <div className="flex-shrink-0">
+                <item.icon size={isCollapsed ? 20 : 18} />
+              </div>
+              <span
+                className={`whitespace-nowrap transition-all duration-300 ease-in-out ${
+                  isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+                }`}
+              >
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Action Button */}

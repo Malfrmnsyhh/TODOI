@@ -1,14 +1,14 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css'; // Kita sesuaikan letak import CSS-nya ke folder app
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Modern To-Do App',
-  description: 'Simple and elegant task management application',
+  title: "TODOI",
+  description: "aplikasi pencatat waktu untuk bantu kamu lebih produktif",
   icons: {
-    icon: '/favicon.ico',
+    icon: "/icon.jpg",
   },
 };
 
