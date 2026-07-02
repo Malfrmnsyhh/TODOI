@@ -51,6 +51,18 @@ export default function MyTasksPage() {
   const [activeTab, setActiveTab] = useState<
     "all" | "pending" | "completed" | "overdue"
   >("all");
+  const [showFilter, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<"dueDate" | "priority" | "createdAt">(
+    "dueDate",
+  );
+  const [priorityFilter, setPriorityFilter] = useState<
+    "all" | "high" | "medium" | "low"
+  >("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+
+  const categories = Array.from(
+    new Set(tasks.map((t) => t.category).filter(Boolean)),
+  );
 
   const handleOpenForm = (task?: Task) => {
     setEditingTask(task);
@@ -148,9 +160,9 @@ export default function MyTasksPage() {
     }
   };
 
-  // Saring/Filter Tugas
+  // 1. Saring/Filter Tugas
   const filteredTasks = tasks.filter((task) => {
-    // 1. Filter Pencarian
+    // A. Filter Pencarian
     if (
       searchQuery &&
       !task.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -161,35 +173,60 @@ export default function MyTasksPage() {
       return false;
     }
 
-    // 2. Filter Tab
-    const todayStr = new Date().toDateString();
+    // B. Filter Tab Status
     const taskOverdue = isOverdue(task.dueDate) && !task.isCompleted;
+    if (activeTab === "pending") {
+      if (task.isCompleted) return false;
+    } else if (activeTab === "completed") {
+      if (!task.isCompleted) return false;
+    } else if (activeTab === "overdue") {
+      if (!taskOverdue) return false;
+    }
 
-    if (activeTab === "pending") return !task.isCompleted;
-    if (activeTab === "completed") return task.isCompleted;
-    if (activeTab === "overdue") return taskOverdue;
+    // C. Filter Prioritas (dari Dropdown)
+    if (priorityFilter !== "all" && task.priority !== priorityFilter) {
+      return false;
+    }
+
+    // D. Filter Kategori (dari Dropdown)
+    if (categoryFilter !== "all" && task.category !== categoryFilter) {
+      return false;
+    }
 
     return true;
   });
 
-  // Pengelompokan Tugas (Hari Ini vs Mendatang)
-  const todayTasks = filteredTasks.filter((task) => {
+  // 2. Urutkan (Sorting) Tugas
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    if (sortBy === "dueDate") {
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    }
+    if (sortBy === "priority") {
+      const priorityOrder: Record<string, number> = {
+        high: 1,
+        medium: 2,
+        low: 3,
+      };
+      return (
+        (priorityOrder[a.priority] || 9) - (priorityOrder[b.priority] || 9)
+      );
+    }
+    // Urutan default: Tanggal dibuat (terbaru dahulu)
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  // 3. Pengelompokan Tugas (Hari Ini vs Mendatang)
+  const todayTasks = sortedTasks.filter((task) => {
     if (!task.dueDate) return false;
     return new Date(task.dueDate).toDateString() === new Date().toDateString();
   });
 
-  const upcomingTasks = filteredTasks.filter((task) => {
-    if (!task.dueDate) return true; // Tanpa tenggat masuk ke upcoming/lainnya
+  const upcomingTasks = sortedTasks.filter((task) => {
+    if (!task.dueDate) return true;
     return new Date(task.dueDate).toDateString() !== new Date().toDateString();
   });
-
-  if (!user && !loading) {
-    return (
-      <div className="h-screen w-full bg-[#0b1326] flex items-center justify-center">
-        <Loader className="animate-spin text-indigo-500" size={40} />
-      </div>
-    );
-  }
 
   // Format Helper
   const formatTaskDate = (dateStr?: string | null) => {
@@ -287,12 +324,126 @@ export default function MyTasksPage() {
                   >
                     <Search size={18} />
                   </button>
-                  <button
-                    className="p-2 text-gray-400 hover:text-white border border-white/10 hover:bg-white/5 rounded-xl transition"
-                    title="Saring"
-                  >
-                    <SlidersHorizontal size={18} />
-                  </button>
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowFilters(!showFilter)}
+                      className={`p-2 border rounded-xl transition ${
+                        showFilter ||
+                        priorityFilter !== "all" ||
+                        categoryFilter !== "all" ||
+                        sortBy !== "dueDate"
+                          ? "text-indigo-400 bg-indigo-500/10 border-indigo-500/30"
+                          : "text-gray-400 hover:text-white border-white/10 hover:bg-white/5"
+                      }`}
+                      title="Filter & Urutan"
+                    >
+                      <SlidersHorizontal size={18} />
+                    </button>
+
+                    {showFilter && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setShowFilters(false)}
+                        />
+
+                        <div className="absolute right-0 mt-2 w-64 bg-[#1e293b]/95 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-2xl z-50 text-white animate-in fade-in slide-in-from-top-2 duration-150">
+                          {/* Sorting */}
+                          <div className="mb-4">
+                            <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">
+                              Urutkan
+                            </h4>
+                            <div className="space-y-1.5 text-xs text-gray-300">
+                              {[
+                                {
+                                  id: "dueDate",
+                                  name: "Tenggat Waktu (Terdekat)",
+                                },
+                                {
+                                  id: "priority",
+                                  name: "Prioritas (Tertinggi)",
+                                },
+                                {
+                                  id: "createdAt",
+                                  name: "Tanggal Dibuat (Terbaru)",
+                                },
+                              ].map((option) => (
+                                <label
+                                  key={option.id}
+                                  className="flex items-center gap-2 cursor-pointer py-1 px-1.5 hover:bg-white/5 rounded transition hover:text-white"
+                                >
+                                  <input
+                                    type="radio"
+                                    name="sortBy"
+                                    checked={sortBy === option.id}
+                                    onChange={() => setSortBy(option.id as any)}
+                                    className="accent-indigo-500"
+                                  />
+                                  <span>{option.name}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+
+                          <hr className="border-white/5 mb-4" />
+
+                          {/* Priority Filter */}
+                          <div className="mb-4">
+                            <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">
+                              Filter Prioritas
+                            </h4>
+                            <div className="space-y-1.5 text-xs text-gray-300">
+                              {[
+                                { id: "all", name: "Semua Prioritas" },
+                                { id: "high", name: "Tinggi (High)" },
+                                { id: "medium", name: "Sedang (Medium)" },
+                                { id: "low", name: "Rendah (Low)" },
+                              ].map((option) => (
+                                <label
+                                  key={option.id}
+                                  className="flex items-center gap-2 cursor-pointer py-1 px-1.5 hover:bg-white/5 rounded transition hover:text-white"
+                                >
+                                  <input
+                                    type="radio"
+                                    name="priorityFilter"
+                                    checked={priorityFilter === option.id}
+                                    onChange={() =>
+                                      setPriorityFilter(option.id as any)
+                                    }
+                                    className="accent-indigo-500"
+                                  />
+                                  <span>{option.name}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+
+                          <hr className="border-white/5 mb-4" />
+
+                          {/* Category Filter */}
+                          <div>
+                            <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">
+                              Filter Kategori
+                            </h4>
+                            <select
+                              value={categoryFilter}
+                              onChange={(e) =>
+                                setCategoryFilter(e.target.value)
+                              }
+                              className="w-full bg-[#0b1326] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            >
+                              <option value="all">Semua Kategori</option>
+                              {categories.map((cat) => (
+                                <option key={cat} value={cat}>
+                                  #{cat}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
