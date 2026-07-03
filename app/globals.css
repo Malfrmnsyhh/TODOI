@@ -26,6 +26,24 @@ body {
   @apply bg-[#334155];
 }
 
+/* Custom scrollbar bertema Indigo untuk Popover Notifikasi */
+.custom-scrollbar-indigo::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar-indigo::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar-indigo::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3); /* Indigo-500 dengan opacity */
+  border-radius: 9999px;
+}
+
+.custom-scrollbar-indigo::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.6); /* Indigo-500 lebih terang saat hover */
+}
+
 /* Glassmorphism Utilities */
 .glass-panel {
   @apply bg-[#1e293b]/50 backdrop-blur-md border border-white/10 shadow-xl;
