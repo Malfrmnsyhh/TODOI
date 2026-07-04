@@ -16,9 +16,8 @@ import {
   Clock,
   CheckCircle2,
   AlertTriangle,
-  Menu,
-  Plus,
 } from "lucide-react";
+import MobileHeader from "@/components/MobileHeader";
 import {
   ResponsiveContainer,
   PieChart,
@@ -221,21 +220,7 @@ export default function AnalyticsPage() {
       {/* ── Main Area ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0b1326] flex-shrink-0">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition"
-          >
-            <Menu size={22} />
-          </button>
-          <span className="text-white font-bold text-lg">Analitik</span>
-          <button
-            onClick={handleOpenForm}
-            className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition"
-          >
-            <Plus size={22} />
-          </button>
-        </header>
+        <MobileHeader />
 
         {/* Content Row */}
         <div className="flex flex-1 overflow-hidden">
