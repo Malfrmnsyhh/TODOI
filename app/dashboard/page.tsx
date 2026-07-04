@@ -224,21 +224,21 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Task List Section */}
-                  <div>
-                    <div className="flex items-center justify-between mb-10 mt-10">
-                      <h2 className="text-4xl font-bold text-white">
+                  <div className="bg-[#0F172A] border border-white/5 rounded-2xl flex flex-col overflow-hidden max-h-[600px] shadow-xl mt-8">
+                    {/* Header: Sticky / Tetap */}
+                    <div className="p-5 md:p-6 pb-4 border-b border-white/5 bg-[#0F172A]/95 backdrop-blur sticky top-0 z-10">
+                      <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
                         Daftar Tugas
                       </h2>
+                      <TaskFilters />
                     </div>
 
-                    <div className="bg-[#0F172A] border border-white/5 p-4 md:p-6 rounded-2xl">
-                      <TaskFilters />
-                      <div className="mt-4">
-                        <TaskList
-                          tasks={filteredTasks}
-                          onEdit={handleOpenForm}
-                        />
-                      </div>
+                    {/* Scrollable List */}
+                    <div className="flex-1 overflow-y-auto p-5 md:p-6 pt-2 custom-scrollbar-indigo">
+                      <TaskList
+                        tasks={filteredTasks}
+                        onEdit={handleOpenForm}
+                      />
                     </div>
                   </div>
                 </div>

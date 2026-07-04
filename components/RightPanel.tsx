@@ -6,7 +6,7 @@ import {
   LogOut,
   AlertTriangle,
   CheckCircle2,
-  Cloud,
+  Plus,
 } from "lucide-react";
 import { useTaskStore } from "@/store/taskStore";
 import { useRouter } from "next/navigation";
@@ -102,8 +102,8 @@ export default function RightPanel() {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const deadlineNotifs = notifications.filter((n) => n.type === "deadline");
-  const updateNotifs = notifications.filter((n) => n.type === "update");
-  const systemNotifs = notifications.filter((n) => n.type === "system");
+  const completedNotifs = notifications.filter((n) => n.type === "completed");
+  const newNotifs = notifications.filter((n) => n.type === "new");
 
   return (
     <aside className="w-84 flex-shrink-0 flex flex-col p-6 bg-[#0b1326] border-l border-white/10 hidden lg:flex overflow-y-auto">
@@ -133,15 +133,13 @@ export default function RightPanel() {
               <div className="absolute left-0 mt-3 w-80 bg-[#151f32]/95 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-2xl z-50 text-white animate-in fade-in slide-in-from-top-2 duration-150">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-sm text-white">
-                    Notifications
-                  </h3>
+                  <h3 className="font-bold text-sm text-white">Notifikasi</h3>
                   {unreadCount > 0 && (
                     <button
                       onClick={markAllAsRead}
                       className="text-[10px] text-indigo-400 hover:text-indigo-300 font-medium transition"
                     >
-                      Mark all as read
+                      Tandai semua sudah dibaca
                     </button>
                   )}
                 </div>
@@ -200,14 +198,14 @@ export default function RightPanel() {
                         </div>
                       )}
 
-                      {/* TASK UPDATES */}
-                      {updateNotifs.length > 0 && (
+                      {/* TUGAS SELESAI */}
+                      {completedNotifs.length > 0 && (
                         <div>
                           <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-2 mt-1">
-                            TASK UPDATES
+                            TUGAS SELESAI
                           </span>
                           <div className="space-y-2">
-                            {updateNotifs.map((n) => (
+                            {completedNotifs.map((n) => (
                               <div
                                 key={n.id}
                                 onClick={() => markAsRead(n.id)}
@@ -221,7 +219,7 @@ export default function RightPanel() {
                                   <span className="absolute top-3 left-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full" />
                                 )}
                                 <div
-                                  className={`p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 ${!n.isRead ? "ml-1.5" : ""}`}
+                                  className={`p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 ${!n.isRead ? "ml-1.5" : ""}`}
                                 >
                                   <CheckCircle2 size={14} />
                                 </div>
@@ -244,14 +242,14 @@ export default function RightPanel() {
                         </div>
                       )}
 
-                      {/* SYSTEM ALERTS */}
-                      {systemNotifs.length > 0 && (
+                      {/* TUGAS BARU */}
+                      {newNotifs.length > 0 && (
                         <div>
                           <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-2 mt-1">
-                            SYSTEM ALERTS
+                            TUGAS BARU
                           </span>
                           <div className="space-y-2">
-                            {systemNotifs.map((n) => (
+                            {newNotifs.map((n) => (
                               <div
                                 key={n.id}
                                 onClick={() => markAsRead(n.id)}
@@ -265,9 +263,9 @@ export default function RightPanel() {
                                   <span className="absolute top-3 left-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full" />
                                 )}
                                 <div
-                                  className={`p-1.5 rounded-lg bg-blue-500/20 text-blue-400 ${!n.isRead ? "ml-1.5" : ""}`}
+                                  className={`p-1.5 rounded-lg bg-sky-500/20 text-sky-400 ${!n.isRead ? "ml-1.5" : ""}`}
                                 >
-                                  <Cloud size={14} />
+                                  <Plus size={14} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex justify-between items-baseline gap-1">
@@ -299,7 +297,7 @@ export default function RightPanel() {
                     onClick={() => setShowNotifications(false)}
                     className="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold transition flex items-center justify-center gap-1 mx-auto"
                   >
-                    View All Notifications →
+                    Tutup Notifikasi
                   </button>
                 </div>
               </div>

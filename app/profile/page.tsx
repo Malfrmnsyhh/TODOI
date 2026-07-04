@@ -121,7 +121,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1326] flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#0b1326] flex flex-col items-center justify-center p-4">
       {/* Background orbs */}
       <div className="absolute top-20 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                placeholder="Contoh: Akmal"
+                placeholder="Contoh: Rizky"
                 maxLength={30}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition"
               />
@@ -264,7 +264,7 @@ export default function ProfilePage() {
           <button
             onClick={handleSave}
             disabled={saving || uploading}
-            className="mt-8 w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition shadow-lg shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="mt-8 w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition shadow-lg shadow-indigo-500/30 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           >
             {saving ? (
               <>

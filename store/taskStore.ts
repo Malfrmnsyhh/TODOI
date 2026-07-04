@@ -3,12 +3,28 @@ import { Task, FilterState } from '@/lib/types';
 
 export interface AppNotification {
   id: string;
-  type: 'deadline' | 'update' | 'system';
+  type: 'deadline' | 'completed' | 'new';
   title: string;
   message: string;
-  timeAgo: string;
+  timestamp: number; // epoch ms – dipakai untuk hitung timeAgo real-time
+  timeAgo: string;  // dihitung saat generate, opsional untuk render langsung
   isRead: boolean;
   taskId?: string;
+}
+
+// Helper: hitung waktu relatif ("5 menit yang lalu", "2 jam yang lalu", dsb.)
+export function timeAgoFromTimestamp(ts: number): string {
+  const now = Date.now();
+  const diffMs = now - ts;
+  const diffMin = Math.floor(diffMs / 60_000);
+  const diffHr = Math.floor(diffMs / 3_600_000);
+  const diffDay = Math.floor(diffMs / 86_400_000);
+
+  if (diffMin < 1) return 'Baru saja';
+  if (diffMin < 60) return `${diffMin} mnt lalu`;
+  if (diffHr < 24) return `${diffHr} jam lalu`;
+  if (diffDay === 1) return 'Kemarin';
+  return `${diffDay} hari lalu`;
 }
 
 interface User {
@@ -120,51 +136,67 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
   generateNotifications: () => {
     const { tasks } = get();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
     const list: AppNotification[] = [];
 
-    // 1. DEADLINES / OVERDUE
+    // 1. DEADLINE — tugas overdue (belum selesai & tenggat sudah lewat)
     const overdueTasks = tasks.filter(
-      (t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) < today
+      (t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) < todayMidnight
     );
     overdueTasks.forEach((t) => {
+      // Gunakan timestamp dueDate sebagai waktu acuan notif
+      const ts = t.dueDate ? new Date(t.dueDate).getTime() : Date.now();
       list.push({
-        id: `overdue-${t.id}`,
+        id: `deadline-${t.id}`,
         type: 'deadline',
         title: 'Tugas Terlambat',
-        message: `"${t.title}" telah melewati tenggat waktu. Segera periksa daftar tugas Anda.`,
-        timeAgo: 'Baru saja',
+        message: `"${t.title}" telah melewati tenggat waktu. Segera selesaikan!`,
+        timestamp: ts,
+        timeAgo: timeAgoFromTimestamp(ts),
         isRead: false,
         taskId: t.id,
       });
     });
 
-    // 2. TASK UPDATES / COMPLETED
+    // 2. COMPLETED — tugas yang sudah ditandai selesai
     const completedTasks = tasks.filter((t) => t.isCompleted);
     completedTasks.forEach((t) => {
+      // Gunakan updatedAt sebagai waktu tugas diselesaikan
+      const ts = new Date(t.updatedAt).getTime();
       list.push({
         id: `completed-${t.id}`,
-        type: 'update',
+        type: 'completed',
         title: 'Tugas Selesai',
-        message: `Anda telah menyelesaikan tugas "${t.title}". Kerja bagus!`,
-        timeAgo: '1 jam yang lalu',
+        message: `"${t.title}" telah diselesaikan. Kerja bagus!`,
+        timestamp: ts,
+        timeAgo: timeAgoFromTimestamp(ts),
         isRead: false,
         taskId: t.id,
       });
     });
 
-    // 3. SYSTEM ALERTS
-    list.push({
-      id: 'system-sync',
-      type: 'system',
-      title: 'Sinkronisasi Berhasil',
-      message: 'Semua perubahan tugas lokal Anda telah disinkronkan dengan aman.',
-      timeAgo: '5 jam yang lalu',
-      isRead: false,
+    // 3. NEW — tugas baru yang belum selesai (berdasarkan createdAt)
+    const newTasks = tasks.filter((t) => !t.isCompleted);
+    newTasks.forEach((t) => {
+      // Gunakan createdAt sebagai waktu tugas dibuat
+      const ts = new Date(t.createdAt).getTime();
+      list.push({
+        id: `new-${t.id}`,
+        type: 'new',
+        title: 'Tugas Ditambahkan',
+        message: `"${t.title}" berhasil ditambahkan ke daftar tugas Anda.`,
+        timestamp: ts,
+        timeAgo: timeAgoFromTimestamp(ts),
+        isRead: false,
+        taskId: t.id,
+      });
     });
 
-    // Pertahankan status dibaca sebelumnya agar tidak ter-reset
+    // Urutkan dari yang paling baru ke paling lama
+    list.sort((a, b) => b.timestamp - a.timestamp);
+
+    // Pertahankan status isRead sebelumnya agar tidak ter-reset setiap render
     const prevNotifications = get().notifications || [];
     const updatedList = list.map((notif) => {
       const match = prevNotifications.find((p) => p.id === notif.id);

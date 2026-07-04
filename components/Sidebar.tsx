@@ -125,7 +125,6 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 space-y-2">
         {menuItems.map((item) => {
-          // DETEKSI APAKAH MENU INI AKTIF SECARA REAL
           const isActive = pathname === item.href;
 
           return (
@@ -161,7 +160,7 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
       {/* Action Button */}
       <button
         onClick={onNewTask}
-        title={isCollapsed ? "Create New Task" : ""}
+        title={isCollapsed ? "Buat Tugas Baru" : ""}
         className={`mt-auto flex items-center rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 font-semibold overflow-hidden ${
           isCollapsed
             ? "justify-center w-full aspect-square"
@@ -176,7 +175,7 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
             isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
           }`}
         >
-          Create New Task
+          Buat Tugas Baru
         </span>
       </button>
     </aside>

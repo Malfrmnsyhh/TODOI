@@ -1,54 +1,54 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useTaskStore } from '@/store/taskStore';
-import { Loader, Eye, EyeOff } from 'lucide-react';
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTaskStore } from "@/store/taskStore";
+import { Loader, Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { setUser } = useTaskStore();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
-  const [error, setError] = useState('');
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       // Register
-      const regRes = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const regRes = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
       const regData = await regRes.json();
       if (!regRes.ok) {
-        setError(regData.error || 'Registrasi gagal');
+        setError(regData.error || "Registrasi gagal");
         return;
       }
 
       // Auto-login after register
-      const loginRes = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const loginRes = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email, password: form.password }),
       });
 
       const loginData = await loginRes.json();
       if (loginRes.ok) {
         setUser(loginData.user);
-        router.push('/');
+        router.push("/");
       } else {
-        router.push('/login');
+        router.push("/login");
       }
     } catch {
-      setError('Terjadi kesalahan. Coba lagi.');
+      setError("Terjadi kesalahan. Coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -76,19 +76,23 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Nama Lengkap</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Nama Lengkap
+              </label>
               <input
                 type="text"
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="John Doe"
+                placeholder="masukan nama kamu"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Email
+              </label>
               <input
                 type="email"
                 required
@@ -100,14 +104,18 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Password
+              </label>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   minLength={6}
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
                   placeholder="Minimal 6 karakter"
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition pr-12"
                 />
@@ -126,13 +134,22 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition shadow-lg shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? <><Loader size={18} className="animate-spin" /> Memproses...</> : 'Buat Akun'}
+              {loading ? (
+                <>
+                  <Loader size={18} className="animate-spin" /> Memproses...
+                </>
+              ) : (
+                "Buat Akun"
+              )}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Sudah punya akun?{' '}
-            <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition">
+            Sudah punya akun?{" "}
+            <Link
+              href="/login"
+              className="text-indigo-400 hover:text-indigo-300 font-medium transition"
+            >
               Masuk di sini
             </Link>
           </p>
