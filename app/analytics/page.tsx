@@ -102,11 +102,12 @@ export default function AnalyticsPage() {
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);
   const overdueTasks = tasks.filter(
-    (t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) < todayMidnight
+    (t) => !t.isCompleted && t.dueDate && new Date(t.dueDate) < todayMidnight,
   ).length;
 
   // Completion Rate
-  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const completionRate =
+    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   // Distribusi Prioritas (Data untuk Donut/Pie Chart)
   const highPriority = tasks.filter((t) => t.priority === "high").length;
@@ -120,7 +121,9 @@ export default function AnalyticsPage() {
   ].filter((d) => d.value > 0);
 
   // Fallback jika tidak ada data
-  const defaultPriorityData = [{ name: "Belum Ada Data", value: 1, color: "#475569" }];
+  const defaultPriorityData = [
+    { name: "Belum Ada Data", value: 1, color: "#475569" },
+  ];
 
   // Distribusi Kategori (Data untuk Horizontal Bar Chart)
   const categoryCounts: Record<string, number> = {};
@@ -147,11 +150,14 @@ export default function AnalyticsPage() {
       const dateStr = d.toDateString();
 
       const created = tasks.filter(
-        (t) => new Date(t.createdAt).toDateString() === dateStr
+        (t) => new Date(t.createdAt).toDateString() === dateStr,
       ).length;
 
       const completed = tasks.filter(
-        (t) => t.isCompleted && t.updatedAt && new Date(t.updatedAt).toDateString() === dateStr
+        (t) =>
+          t.isCompleted &&
+          t.updatedAt &&
+          new Date(t.updatedAt).toDateString() === dateStr,
       ).length;
 
       chartData.push({
@@ -169,7 +175,7 @@ export default function AnalyticsPage() {
   const handleCloseForm = () => setShowForm(false);
 
   const handleAddTask = async (
-    formData: Omit<Task, "id" | "isCompleted" | "createdAt" | "updatedAt">
+    formData: Omit<Task, "id" | "isCompleted" | "createdAt" | "updatedAt">,
   ) => {
     try {
       const res = await fetch("/api/tasks", {
@@ -241,7 +247,8 @@ export default function AnalyticsPage() {
                   Analitik Produktivitas
                 </h1>
                 <p className="text-gray-400 text-xs md:text-sm">
-                  Pantau performa, tren penyelesaian, dan distribusi beban tugas Anda secara real-time.
+                  Pantau performa, tren penyelesaian, dan distribusi beban tugas
+                  Anda secara real-time.
                 </p>
               </div>
 
@@ -318,23 +325,65 @@ export default function AnalyticsPage() {
                   <div className="glass-panel p-5 md:p-6 rounded-2xl bg-white/5 border border-white/10">
                     <div className="flex items-center gap-2 mb-6">
                       <TrendingUp className="text-indigo-400" size={18} />
-                      <h2 className="text-base font-bold text-white">Tren Aktivitas 7 Hari Terakhir</h2>
+                      <h2 className="text-base font-bold text-white">
+                        Tren Aktivitas 7 Hari Terakhir
+                      </h2>
                     </div>
                     <div className="h-64 w-full">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                        <AreaChart
+                          data={trendData}
+                          margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
+                        >
                           <defs>
-                            <linearGradient id="colorSelesai" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                              <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                            <linearGradient
+                              id="colorSelesai"
+                              x1="0"
+                              y1="0"
+                              x2="0"
+                              y2="1"
+                            >
+                              <stop
+                                offset="5%"
+                                stopColor="#6366f1"
+                                stopOpacity={0.4}
+                              />
+                              <stop
+                                offset="95%"
+                                stopColor="#6366f1"
+                                stopOpacity={0}
+                              />
                             </linearGradient>
-                            <linearGradient id="colorBaru" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
-                              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                            <linearGradient
+                              id="colorBaru"
+                              x1="0"
+                              y1="0"
+                              x2="0"
+                              y2="1"
+                            >
+                              <stop
+                                offset="5%"
+                                stopColor="#3b82f6"
+                                stopOpacity={0.4}
+                              />
+                              <stop
+                                offset="95%"
+                                stopColor="#3b82f6"
+                                stopOpacity={0}
+                              />
                             </linearGradient>
                           </defs>
-                          <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} />
-                          <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+                          <XAxis
+                            dataKey="name"
+                            stroke="#64748b"
+                            fontSize={11}
+                            tickLine={false}
+                          />
+                          <YAxis
+                            stroke="#64748b"
+                            fontSize={11}
+                            tickLine={false}
+                          />
                           <Tooltip
                             contentStyle={{
                               backgroundColor: "#1e293b",
@@ -344,9 +393,32 @@ export default function AnalyticsPage() {
                               fontSize: "12px",
                             }}
                           />
-                          <Legend verticalAlign="top" height={36} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: '11px', color: '#94a3b8' }} />
-                          <Area type="monotone" dataKey="Selesai" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorSelesai)" />
-                          <Area type="monotone" dataKey="Baru" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorBaru)" />
+                          <Legend
+                            verticalAlign="bottom"
+                            height={36}
+                            iconType="circle"
+                            iconSize={8}
+                            wrapperStyle={{
+                              fontSize: "11px",
+                              color: "#94a3b8",
+                            }}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="Selesai"
+                            stroke="#6366f1"
+                            strokeWidth={2}
+                            fillOpacity={1}
+                            fill="url(#colorSelesai)"
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="Baru"
+                            stroke="#3b82f6"
+                            strokeWidth={2}
+                            fillOpacity={1}
+                            fill="url(#colorBaru)"
+                          />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -356,15 +428,23 @@ export default function AnalyticsPage() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Donut Chart: Distribusi Prioritas */}
                     <div className="glass-panel p-5 md:p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col h-80">
-                      <h2 className="text-base font-bold text-white mb-2">Distribusi Prioritas</h2>
-                      <p className="text-gray-400 text-xs mb-4">Porsi tugas berdasarkan tingkat kepentingannya.</p>
+                      <h2 className="text-base font-bold text-white mb-2">
+                        Distribusi Prioritas
+                      </h2>
+                      <p className="text-gray-400 text-xs mb-4">
+                        Porsi tugas berdasarkan tingkat kepentingannya.
+                      </p>
 
                       <div className="flex-1 flex items-center justify-between gap-4">
                         <div className="w-1/2 h-full min-h-[160px]">
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                               <Pie
-                                data={priorityData.length > 0 ? priorityData : defaultPriorityData}
+                                data={
+                                  priorityData.length > 0
+                                    ? priorityData
+                                    : defaultPriorityData
+                                }
                                 cx="50%"
                                 cy="50%"
                                 innerRadius={55}
@@ -372,8 +452,14 @@ export default function AnalyticsPage() {
                                 paddingAngle={4}
                                 dataKey="value"
                               >
-                                {(priorityData.length > 0 ? priorityData : defaultPriorityData).map((entry, index) => (
-                                  <Cell key={`cell-${index}`} fill={entry.color} />
+                                {(priorityData.length > 0
+                                  ? priorityData
+                                  : defaultPriorityData
+                                ).map((entry, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={entry.color}
+                                  />
                                 ))}
                               </Pie>
                               <Tooltip
@@ -392,7 +478,10 @@ export default function AnalyticsPage() {
                         <div className="w-1/2 flex flex-col gap-3">
                           {priorityData.length > 0 ? (
                             priorityData.map((item, idx) => (
-                              <div key={idx} className="flex items-center justify-between">
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between"
+                              >
                                 <div className="flex items-center gap-2">
                                   <span
                                     className="w-2.5 h-2.5 rounded-full inline-block"
@@ -418,16 +507,42 @@ export default function AnalyticsPage() {
 
                     {/* Bar Chart: Kategori Teratas */}
                     <div className="glass-panel p-5 md:p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col h-80">
-                      <h2 className="text-base font-bold text-white mb-2">Beban per Kategori</h2>
-                      <p className="text-gray-400 text-xs mb-4">Jumlah tugas di 5 kategori teratas Anda.</p>
+                      <h2 className="text-base font-bold text-white mb-2">
+                        Beban per Kategori
+                      </h2>
+                      <p className="text-gray-400 text-xs mb-4">
+                        Jumlah tugas di 5 kategori teratas Anda.
+                      </p>
 
                       <div className="flex-1 w-full min-h-[160px]">
                         {categoryData.length > 0 ? (
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={categoryData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
-                              <XAxis type="number" stroke="#64748b" fontSize={10} tickLine={false} />
-                              <YAxis dataKey="name" type="category" stroke="#64748b" fontSize={10} tickLine={false} width={80} />
+                            <BarChart
+                              data={categoryData}
+                              layout="vertical"
+                              margin={{
+                                top: 5,
+                                right: 10,
+                                left: 10,
+                                bottom: 5,
+                              }}
+                            >
+                              <XAxis
+                                type="number"
+                                stroke="#64748b"
+                                fontSize={10}
+                                tickLine={false}
+                              />
+                              <YAxis
+                                dataKey="name"
+                                type="category"
+                                stroke="#64748b"
+                                fontSize={10}
+                                tickLine={false}
+                                width={80}
+                              />
                               <Tooltip
+                                cursor={false}
                                 contentStyle={{
                                   backgroundColor: "#1e293b",
                                   border: "1px solid rgba(255,255,255,0.1)",
@@ -435,9 +550,21 @@ export default function AnalyticsPage() {
                                   fontSize: "11px",
                                 }}
                               />
-                              <Bar dataKey="value" fill="#6366f1" radius={[0, 6, 6, 0]} maxBarSize={16}>
+                              <Bar
+                                dataKey="value"
+                                fill="#6366f1"
+                                radius={[0, 6, 6, 0]}
+                                maxBarSize={16}
+                              >
                                 {categoryData.map((entry, index) => (
-                                  <Cell key={`cell-${index}`} fill={index === 0 ? "#6366f1" : "rgba(99, 102, 241, 0.6)"} />
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={
+                                      index === 0
+                                        ? "#6366f1"
+                                        : "rgba(99, 102, 241, 0.6)"
+                                    }
+                                  />
                                 ))}
                               </Bar>
                             </BarChart>
@@ -465,10 +592,7 @@ export default function AnalyticsPage() {
 
       {/* Task Form Modal */}
       {showForm && (
-        <TaskForm
-          onSubmit={handleAddTask}
-          onClose={handleCloseForm}
-        />
+        <TaskForm onSubmit={handleAddTask} onClose={handleCloseForm} />
       )}
     </div>
   );
