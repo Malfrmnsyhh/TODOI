@@ -48,8 +48,8 @@ export default function Sidebar({ onNewTask }: SidebarProps) {
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     { name: "Tugas Anda", icon: CheckSquare, href: "/task" },
-    { name: "Analitik", icon: BarChart2, href: "#" },
-    { name: "Pengaturan", icon: Settings, href: "#" },
+    { name: "Analitik", icon: BarChart2, href: "/analytics" },
+    { name: "Pengaturan", icon: Settings, href: "/profile" },
   ];
 
   return (

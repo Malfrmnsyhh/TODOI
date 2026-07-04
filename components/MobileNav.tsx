@@ -23,9 +23,9 @@ export default function MobileNav({ onNewTask }: MobileNavProps) {
     { href: "/task", icon: CheckSquare, label: "Tugas" },
     { href: "/profile", icon: User, label: "Profil" },
     {
-      href: "/dashboard?filter=analytics",
+      href: "/analytics",
       icon: BarChart2,
-      label: "Analytics",
+      label: "Analitik",
     },
   ];
 
