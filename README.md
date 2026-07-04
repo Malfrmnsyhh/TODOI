@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TODOI - Modern Task Management App 🚀
 
-## Getting Started
+TODOI adalah aplikasi manajemen tugas (To-Do List) modern yang dirancang dengan antarmuka premium, dinamis, dan responsif. Dibangun menggunakan teknologi web terbaru untuk memberikan pengalaman pengguna yang mulus dalam mengatur produktivitas sehari-hari.
 
-First, run the development server:
+## ✨ Fitur Utama
 
+- **🔐 Autentikasi Aman**: Login dan registrasi yang aman menggunakan Supabase Auth.
+- **📱 Desain Responsif & Premium**: Antarmuka *dark mode* dengan efek *glassmorphism* modern yang terlihat sempurna di Desktop maupun Mobile.
+- **✅ Manajemen Tugas Lengkap**: Tambah, edit, hapus, dan tandai tugas selesai dengan mudah.
+- **🏷️ Kategorisasi & Prioritas**: Kelompokkan tugas berdasarkan kategori dan tingkat prioritas (Tinggi, Sedang, Rendah).
+- **📅 Tenggat Waktu (Due Date)**: Atur tenggat waktu dan dapatkan peringatan otomatis untuk tugas yang *Overdue* (terlambat).
+- **📊 Dashboard & Analitik**: Pantau produktivitas Anda melalui grafik (Recharts) dan statistik penyelesaian tugas secara *real-time*.
+- **👤 Manajemen Profil**: Kustomisasi profil Anda, termasuk nama panggilan, bio, dan unggah foto profil (Avatar) langsung ke penyimpanan cloud.
+- **⚙️ Pengaturan Komprehensif**: Sesuaikan preferensi notifikasi, ubah kata sandi, hingga fitur **Ekspor Data** untuk mengunduh semua tugas Anda dalam format JSON sebagai *backup*.
+
+## 🛠️ Teknologi yang Digunakan
+
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Ikon**: [Lucide React](https://lucide.dev/)
+- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Grafik**: [Recharts](https://recharts.org/)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
+
+## 🚀 Cara Menjalankan Secara Lokal (Local Development)
+
+Ikuti langkah-langkah berikut untuk menjalankan TODOI di komputer Anda:
+
+### 1. Clone Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Malfrmnsyhh/TODOI.git
+cd TODOI/todo-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Konfigurasi Environment Variables
+Buat dua file environment di root folder `todo-app`:
+1. Buat file `.env` dan masukkan konfigurasi database URL dari Supabase.
+2. Buat file `.env.local` dan masukkan kunci API Supabase (URL & Anon Key).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Setup Database (Prisma)
+Generate Prisma client dan jalankan migrasi database:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-## Learn More
+### 5. Jalankan Aplikasi
+```bash
+npm run dev
+```
+Buka [http://localhost:3000](http://localhost:3000) di browser Anda untuk melihat hasilnya!
 
-To learn more about Next.js, take a look at the following resources:
+## 🌐 Deployment
+Aplikasi ini dioptimalkan untuk di-*deploy* menggunakan **[Vercel](https://vercel.com/)**. Pastikan untuk menambahkan semua *Environment Variables* di pengaturan proyek Vercel Anda sebelum melakukan *deployment*.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Dibuat dengan ❤️ untuk produktivitas yang lebih baik.*
