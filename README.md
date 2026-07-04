@@ -5,13 +5,13 @@ TODOI adalah aplikasi manajemen tugas (To-Do List) modern yang dirancang dengan 
 ## ✨ Fitur Utama
 
 - **🔐 Autentikasi Aman**: Login dan registrasi yang aman menggunakan Supabase Auth.
-- **📱 Desain Responsif & Premium**: Antarmuka *dark mode* dengan efek *glassmorphism* modern yang terlihat sempurna di Desktop maupun Mobile.
+- **📱 Desain Responsif & Modern**: Antarmuka _dark mode_ dengan efek _glassmorphism_ modern yang terlihat sempurna di Desktop maupun Mobile.
 - **✅ Manajemen Tugas Lengkap**: Tambah, edit, hapus, dan tandai tugas selesai dengan mudah.
 - **🏷️ Kategorisasi & Prioritas**: Kelompokkan tugas berdasarkan kategori dan tingkat prioritas (Tinggi, Sedang, Rendah).
-- **📅 Tenggat Waktu (Due Date)**: Atur tenggat waktu dan dapatkan peringatan otomatis untuk tugas yang *Overdue* (terlambat).
-- **📊 Dashboard & Analitik**: Pantau produktivitas Anda melalui grafik (Recharts) dan statistik penyelesaian tugas secara *real-time*.
+- **📅 Tenggat Waktu (Due Date)**: Atur tenggat waktu dan dapatkan peringatan otomatis untuk tugas yang _Overdue_ (terlambat).
+- **📊 Dashboard & Analitik**: Pantau produktivitas Anda melalui grafik (Recharts) dan statistik penyelesaian tugas secara _real-time_.
 - **👤 Manajemen Profil**: Kustomisasi profil Anda, termasuk nama panggilan, bio, dan unggah foto profil (Avatar) langsung ke penyimpanan cloud.
-- **⚙️ Pengaturan Komprehensif**: Sesuaikan preferensi notifikasi, ubah kata sandi, hingga fitur **Ekspor Data** untuk mengunduh semua tugas Anda dalam format JSON sebagai *backup*.
+- **⚙️ Pengaturan Komprehensif**: Sesuaikan preferensi notifikasi, ubah kata sandi, hingga fitur **Ekspor Data** untuk mengunduh semua tugas Anda dalam format JSON sebagai _backup_.
 
 ## 🛠️ Teknologi yang Digunakan
 
@@ -29,36 +29,42 @@ TODOI adalah aplikasi manajemen tugas (To-Do List) modern yang dirancang dengan 
 Ikuti langkah-langkah berikut untuk menjalankan TODOI di komputer Anda:
 
 ### 1. Clone Repository
+
 ```bash
 git clone https://github.com/Malfrmnsyhh/TODOI.git
 cd TODOI/todo-app
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 3. Konfigurasi Environment Variables
+
 Buat dua file environment di root folder `todo-app`:
+
 1. Buat file `.env` dan masukkan konfigurasi database URL dari Supabase.
 2. Buat file `.env.local` dan masukkan kunci API Supabase (URL & Anon Key).
 
 ### 4. Setup Database (Prisma)
+
 Generate Prisma client dan jalankan migrasi database:
+
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
 ### 5. Jalankan Aplikasi
+
 ```bash
 npm run dev
 ```
+
 Buka [http://localhost:3000](http://localhost:3000) di browser Anda untuk melihat hasilnya!
 
 ## 🌐 Deployment
-Aplikasi ini dioptimalkan untuk di-*deploy* menggunakan **[Vercel](https://vercel.com/)**. Pastikan untuk menambahkan semua *Environment Variables* di pengaturan proyek Vercel Anda sebelum melakukan *deployment*.
 
----
-*Dibuat dengan ❤️ untuk produktivitas yang lebih baik.*
+Aplikasi ini dioptimalkan untuk di-_deploy_ menggunakan **[Vercel](https://vercel.com/)**. Pastikan untuk menambahkan semua _Environment Variables_ di pengaturan proyek Vercel Anda sebelum melakukan _deployment_.
