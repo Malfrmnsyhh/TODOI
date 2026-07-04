@@ -511,7 +511,7 @@ export default function AnalyticsPage() {
                         Beban per Kategori
                       </h2>
                       <p className="text-gray-400 text-xs mb-4">
-                        Jumlah tugas di 5 kategori teratas Anda.
+                        Jumlah tugas di kategori teratas Anda.
                       </p>
 
                       <div className="flex-1 w-full min-h-[160px]">
